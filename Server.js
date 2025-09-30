@@ -18,7 +18,6 @@ const router=require('./Routers/Routes');
 const { get } = require('mongoose');
 app.use('/api/v1/',router);
 
-
 app.get("/",(req,res)=>{
   res.send('<h1>My homepage</h1>')
 })
