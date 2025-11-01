@@ -14,6 +14,12 @@
         type:String,
         required:true,
         maxlength:30,
-    }
+    },
+    myimage:{
+        type:String,
+        required:true,
+    },
+    role:{type:String,enum:["doctor","admin","user"]},
+
  })
 module.exports= mongoose.model("login",AuthSignin);
