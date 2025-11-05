@@ -12,7 +12,7 @@ const Authadmin= async(req,res,next)=>{
       }
 
       const verify_atoken = jwt.verify(atoken,process.env.JWT_SECRET);
-     
+     console.log("auth token:",verify_atoken);
       if(verify_atoken !== process.env.ADMIN_PASSWORD)
       {
          return res.status(405).json({

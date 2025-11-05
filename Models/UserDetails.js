@@ -27,10 +27,9 @@ const userDetails= mongoose.Schema({
         type:String,
         default:"0000000000"
     },
-    // myimage:{
-    //     type:String,
-    //     required:true
-    // },
+    myimage:{
+        type:String,
+    },
     password:{type:String,required:true}
 })
 module.exports= mongoose.model("User",userDetails);
