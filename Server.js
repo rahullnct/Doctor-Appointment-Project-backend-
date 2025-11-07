@@ -26,6 +26,7 @@ app.use(fileupload({
   tempFileDir:"/tmp/",
 }))
 app.use('/doctor_profileimg', express.static(path.join(__dirname, 'doctor_profileimg')));
+app.use('/profile_image',express.static(path.join(__dirname, 'user_Images')));
 
 app.post("/api/admin/login",(req,res)=>{
   res.json({

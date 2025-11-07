@@ -18,6 +18,7 @@ router.post('/admin/login',AuthLogin);
  router.post("/all-doctors",AuthAdmin,allDoctors)
  router.post("/availability",AuthAdmin,checkAvailability);
  router.get('/doctor/list',doctorList);
+
 // // router.post("/login_doc",LoginDoctor);
 // const AuthLogin= require("../Controller/LoginDoctor");
 
