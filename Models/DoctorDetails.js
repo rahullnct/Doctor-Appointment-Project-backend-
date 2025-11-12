@@ -37,6 +37,10 @@ const DoctorDetails= mongoose.Schema({
         default:"rahul.jpg",
         required:true
     },
+    slot_booked:{
+        type:Object,
+        default:{},
+    },
     password:{type:String,required:true},
     speciality:{type:String,required:true,maxlength:20},
     experience:{type:String,required:true},

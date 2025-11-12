@@ -11,6 +11,7 @@ const appointment_model= new mongoose.Schema({
     },
     slotDate:{
         type:String,
+        // default:'dd_mm_yyyy',
         required:true,
     },
     slotTime:{
@@ -27,10 +28,12 @@ const appointment_model= new mongoose.Schema({
     },
     amount:{
         type:Number,
-        required:true,
+        default:10,
+        // required:true,
     },
     date:{
         type:Number,
+        default:Date.now(),
         required:true,
     },
     cancelled:{

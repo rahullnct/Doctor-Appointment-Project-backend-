@@ -143,66 +143,167 @@ const UpdateProfile=async(req,res)=>{
         })
     }
 };
-const user_appointment=async(req,res)=>{
-   try{
-     const{userId,docId,slotDate,slotTime}=req.body;
+// const user_appointment=async(req,res)=>{
+//    try{
+//      const{userId,docId,slotDate,slotTime}=req.body;
 
-     const doctor_id= await DoctorDetails.findById(docId).select('-password');
-     if(!doctor_id.available){
-       return res.status(401).json({
-            success:false,
-            message:"doctor is not available",
-        })
-     }
+//      const doctor_id= await DoctorDetails.findById(docId).select('-password');
+//      if(!doctor_id.available){
+//        return res.status(401).json({
+//             success:false,
+//             message:"doctor is not available",
+//         })
+//      }
 
-     let slot_booked= DocDetails.slots_booked
+//     let slot_booked = doctor_id.slot_booked;
+   
+//     //  let slot_booked= doctor_id.slot_booked;
+//      console.log("slot booked date:",slot_booked[slotDate]);
+    
+//     console.log("slotDate from frontend:", slotDate);
+// console.log("All keys in slot_booked:", Object.keys(slot_booked));
 
-     if(slot_booked[slotDate]){
-        if(slot_booked[slotDate].includes(slot_booked[slotTime])){
-            return res.status(402).json({
-                success:false,
-                message:"slot already booked"
-            })
-        }
-        else{
-            slot_booked[slotDate].push(slotTime);
-        }
-     }else{
-        slot_booked[slotDate]=[]
-        slot_booked[slotDate].push(slotTime)
-     }
+
+
+//      if(slot_booked[slotDate]){
+//         if(slot_booked[slotDate].includes(slotTime)){
+//             console.log("this slot is already booked");
+//             return res.status(402).json({
+//                 success:false,
+//                 message:"slot already booked"
+//             })
+//         }
+//         else{
+//             slot_booked[slotDate].push(slotTime);
+//         }
+//      }else{
+//         // slot_booked[slotDate]=[]
+//         slot_booked[slotDate].push(slotTime)
+//      }
+//      console.log("slot booked:",slot_booked);
+
      
-     const user_id= await userDetails.findById({userId}).select('-password');
+//      const userdata= await userDetails.findById(userId).select('-password');
 
-     delete DocDetails.slot_booked;
+//      delete DocDetails.slot_booked;
 
-     const appointment_data={
-        userId,
-        docId,
-        slotDate,
-        slotTime,
-        userData:userDetails,
-        docData:DocDetails,
-        amount:DocDetails.fees,
-        date:Date.now(),
-     }
+//      const appointment_data={
+//         userId,
+//         docId,
+//         slotDate,
+//         slotTime,
+//         userdata,
+//         doctor_id,
+//         amount:doctor_id.fees,
+//         date:Date.now(),
+//      }
 
-     const newappointment= new appointment_model(appointment_data);
-     await appointment_data.save();
+//      const newappointment= new appointment_model(appointment_data);
+//      await newappointment.save();
 
-      res.status(200).json({
-        success:true,
-        data:newappointment,
-        message:"all Appointment Details are here"
-      })
+//      await DoctorDetails.findByIdAndUpdate(docId,{slot_booked});
+
+//       res.status(200).json({
+//         success:true,
+//         data:newappointment,
+//         message:"all Appointment Details are here"
+//       })
     
 
-   }catch(error){
+//    }catch(error){
+//     console.log(error);
+//     res.status(400).json({
+//         success:false,
+//         message:"Problem in user_appointment",
+//     })
+//    }
+// }
+const user_appointment = async (req, res) => {
+  try {
+    const { userId, docId, slotDate, slotTime } = req.body;
+
+    const doctor = await DoctorDetails.findById(docId).select('-password');
+    if (!doctor.available) {
+      return res.status(401).json({
+        success: false,
+        message: "Doctor is not available",
+      });
+    }
+
+    let slot_booked = doctor.slot_booked || {};
+
+    console.log("slotDate from frontend:", slotDate);
+    console.log("All keys in slot_booked:", Object.keys(slot_booked));
+
+    if (slot_booked[slotDate]) {
+      if (slot_booked[slotDate].includes(slotTime)) {
+        console.log("this slot is already booked");
+        return res.status(402).json({
+          success: false,
+          message: "Slot already booked",
+        });
+      } else {
+        slot_booked[slotDate].push(slotTime);
+      }
+    } else {
+      // ✅ Initialize the date array properly
+      slot_booked[slotDate] = [slotTime];
+    }
+
+    console.log("slot booked:", slot_booked);
+
+    // ✅ Save updated slots to doctor
+    await DoctorDetails.findByIdAndUpdate(
+      docId,
+      { slot_booked },
+      { new: true }
+    );
+
+    const user = await userDetails.findById(userId).select('-password');
+
+    const appointment_data = {
+      userId,
+      docId,
+      slotDate,
+      slotTime,
+      userData: user,
+      docData: doctor,
+      amount: doctor.fees,
+      date: Date.now(),
+    };
+
+    const newAppointment = new appointment_model(appointment_data);
+    await newAppointment.save();
+
+    res.status(200).json({
+      success: true,
+      data: newAppointment,
+      message: "Appointment booked successfully",
+    });
+
+  } catch (error) {
     console.log(error);
     res.status(400).json({
+      success: false,
+      message: "Problem in user_appointment",
+    });
+  }
+};
+const myappintment=async(req,res)=>{
+     try{
+          const {userid}=req.body;
+          const appointment= await appointment_model.find({userid});
+          res.status(200).json({
+            success:true,
+            data:appointment,
+            message:"appointment details are here"
+          })
+     }catch(error){
+      res.status(400).json({
         success:false,
-        message:"Problem in user_appointment",
-    })
-   }
-}
-module.exports={AllUserData,LoginUser,getUserdata,UpdateProfile,user_appointment};
+        message:"myappointment backend is not working"
+      })     }
+
+};
+
+module.exports={AllUserData,LoginUser,getUserdata,UpdateProfile,user_appointment,myappintment};
