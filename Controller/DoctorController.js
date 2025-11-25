@@ -147,6 +147,23 @@ const DoctorLogins=async(req,res)=>{
     }
 }
 
+const DoctorAppointment=async(req,res)=>{
+    try{
+        const{docId}=req.doctor;
+        const appointment= await DoctorDetails.find({docId});
+        res.status(200).json({
+            success:true,
+            appointment,
+            message:"Doctor appointment is here"
+        })
+    }catch(error){
+        console.log(error);
+        res.status(400).json({
+            success:false,
+            message:"doctorappointment has some fault"
+        })
+    }
+}
 
-module.exports={allDoctordata,allDoctors,checkAvailability,doctorList,DoctorLogins};
+module.exports={allDoctordata,allDoctors,checkAvailability,doctorList,DoctorLogins,DoctorAppointment};
 
