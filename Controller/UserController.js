@@ -291,7 +291,7 @@ const user_appointment = async (req, res) => {
 };
 const myappintment=async(req,res)=>{
      try{
-          const {userid}=req.body;
+          const {userid}=req.user.id;
           const appointment= await appointment_model.find({userid});
           res.status(200).json({
             success:true,

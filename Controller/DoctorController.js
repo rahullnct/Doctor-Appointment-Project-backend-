@@ -3,6 +3,7 @@ const DoctorDetails=require("../Models/DoctorDetails");
 const fs=require("fs");
 const path=require("path");
 const bcrypt=require("bcrypt");
+const jwt=require("jsonwebtoken");
 
 const allDoctordata= async(req,res)=>{
     try{
@@ -107,7 +108,45 @@ const doctorList=async(req,res)=>{
         })
     }
 }
+const DoctorLogins=async(req,res)=>{
+    try{
+        const{email,password}=req.body;
+
+        const doctor= await DoctorDetails.findOne({email});
+        if(!doctor){
+            res.status(404).json({
+                success:false,
+                message:"doctor not found"
+            })
+        }
+        
+        const Ismatch= await bcrypt.compare(password,doctor.password);
+        if(Ismatch){
+
+            const token=jwt.sign(password,process.env.JWT_SECRET)
+            res.status(200).json({
+                success:true,
+                token,
+                message:"doctor's token is created successfully"
+            })
+        }
+        else{
+          res.status(400).json({
+            success:false,
+            message:"password is not matched"
+          })
+        }
 
 
-module.exports={allDoctordata,allDoctors,checkAvailability,doctorList};
+    }catch(error){
+        console.log(error);
+        res.status(400).json({
+            success:false,
+            message:"Doctor is not logged In", 
+        })
+    }
+}
+
+
+module.exports={allDoctordata,allDoctors,checkAvailability,doctorList,DoctorLogins};
 

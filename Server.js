@@ -43,9 +43,11 @@ app.listen(PORT,"0.0.0.0",()=>{
 
 const router=require('./Routers/Routes');
 const userRouter=require('./Routers/UserRoute');
+const doctorRouter=require('./Routers/DoctorRoute');
 
 app.use('/api/v1/',router);
 app.use('/api/v1/user',userRouter);
+app.use('/api/v1/doctor',doctorRouter);
 
 
 app.get("/",(req,res)=>{

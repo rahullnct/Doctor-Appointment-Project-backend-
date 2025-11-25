@@ -4,6 +4,7 @@ const router=express.Router();
 // const upload=require("../Middleware/multer");
 // const userController=require("../Controller/UserController");
  const {allDoctors,allDoctordata,checkAvailability,doctorList}=require("../Controller/DoctorController");
+ const {admin_appointment_backend,admin_appointment_cancellation,adminDashboard}=require("../Controller/AdminController");
 // // const loginDoctor=require("../Routers/LoginDoctor");
 // // const LoginDoctor = require("../Controller/LoginDoctor");
 // const {Auth,IsAdmin}=require("../Controller/Auth");
@@ -18,6 +19,9 @@ router.post('/admin/login',AuthLogin);
  router.post("/all-doctors",AuthAdmin,allDoctors)
  router.post("/availability",AuthAdmin,checkAvailability);
  router.get('/doctor/list',doctorList);
+ router.get('/admin/appointments',AuthAdmin,admin_appointment_backend);
+ router.post('admin/appointment_cancel',AuthAdmin,admin_appointment_cancellation);
+ router.get('/admin/dashboard',AuthAdmin,adminDashboard)
 
 // // router.post("/login_doc",LoginDoctor);
 // const AuthLogin= require("../Controller/LoginDoctor");
@@ -34,4 +38,3 @@ router.post('/admin/login',AuthLogin);
 
 
 module.exports=router;
-
