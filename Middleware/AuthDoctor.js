@@ -3,7 +3,7 @@ require("dotenv").config();
 const AuthDoctor= async(req,res,next)=>{
     try{
       const {dtoken}=req?.headers;
-       
+      //  console.log("token from headers:",dtoken);
       if(!dtoken){
         return res.status(404).json({
             success:false,
@@ -11,6 +11,7 @@ const AuthDoctor= async(req,res,next)=>{
         })
       }
       const verify_dtoken = jwt.verify(dtoken,process.env.JWT_SECRET);
+      console.log("verify dtoken",verify_dtoken);
       req.doctor= { docId: verify_dtoken.id}
      next();
   

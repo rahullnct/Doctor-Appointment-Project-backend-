@@ -1,5 +1,7 @@
 
 const DoctorDetails=require("../Models/DoctorDetails");
+const appointment_model=require("../Models/Appointment_Model");
+
 const fs=require("fs");
 const path=require("path");
 const bcrypt=require("bcrypt");
@@ -123,7 +125,7 @@ const DoctorLogins=async(req,res)=>{
         const Ismatch= await bcrypt.compare(password,doctor.password);
         if(Ismatch){
 
-            const token=jwt.sign(password,process.env.JWT_SECRET)
+            const token=jwt.sign({id:doctor._id},process.env.JWT_SECRET)
             res.status(200).json({
                 success:true,
                 token,
@@ -150,7 +152,8 @@ const DoctorLogins=async(req,res)=>{
 const DoctorAppointment=async(req,res)=>{
     try{
         const{docId}=req.doctor;
-        const appointment= await DoctorDetails.find({docId});
+        // console.log(docId);
+        const appointment= await appointment_model.find({docId});
         res.status(200).json({
             success:true,
             appointment,
@@ -164,6 +167,60 @@ const DoctorAppointment=async(req,res)=>{
         })
     }
 }
+const appointmentComplete=async(req,res)=>{
+    try{
+     const{docId}=req.doctor;
+     const{appointmentId}=req.body;
+     
+     const appointment_Data=await appointment_model.findById(appointmentId);
+     if(appointment_Data && appointment_Data.docId === docId){
+        await appointment_Data.findByIdAndUpdate(appointmentId,{isCompleted:true});
+        return res.status(200).json({
+            success:true,
+            message:"appointment Submitted"
+        })
+     }
+     else{
+        return res.status(401).json({
+            success:false,
+            message:"marked failed"
+        })
+     }
+    }catch(error){
+        console.log(error);
+        res.status(400).json({
+            success:false,
+            message:"appointment complete failed"
+        }) 
+    }
+}
+const appointmentCancel=async(req,res)=>{
+    try{
+     const{docId}=req.doctor;
+     const{appointmentId}=req.body;
+     
+     const appointment_Data=await appointment_model.findById(appointmentId);
+     if(appointment_Data && appointment_Data.docId === docId){
+        await appointment_Data.findByIdAndUpdate(appointmentId,{cancelled:true});
+        return res.status(200).json({
+            success:true,
+            message:"appointement Canceled"
+        })
+     }
+     else{
+        return res.status(401).json({
+            success:false,
+            message:"marked failed"
+        })
+     }
+    }catch(error){
+        console.log(error);
+        res.status(400).json({
+            success:false,
+            message:"appointment cancel failed"
+        }) 
+    }
+}
 
-module.exports={allDoctordata,allDoctors,checkAvailability,doctorList,DoctorLogins,DoctorAppointment};
+module.exports={allDoctordata,allDoctors,checkAvailability,doctorList,DoctorLogins,DoctorAppointment,appointmentComplete,appointmentCancel};
 
