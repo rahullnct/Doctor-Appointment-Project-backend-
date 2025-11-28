@@ -46,7 +46,7 @@ const appointment_model= new mongoose.Schema({
     },
     IsCompleted:{
         type:Boolean,
-        required:false,
+        default:false,
     }
 })
 module.exports= mongoose.model("Appointment",appointment_model);

@@ -174,7 +174,7 @@ const appointmentComplete=async(req,res)=>{
      
      const appointment_Data=await appointment_model.findById(appointmentId);
      if(appointment_Data && appointment_Data.docId === docId){
-        await appointment_Data.findByIdAndUpdate(appointmentId,{isCompleted:true});
+        await appointment_model.findByIdAndUpdate(appointmentId,{IsCompleted:true});
         return res.status(200).json({
             success:true,
             message:"appointment Submitted"
@@ -201,7 +201,7 @@ const appointmentCancel=async(req,res)=>{
      
      const appointment_Data=await appointment_model.findById(appointmentId);
      if(appointment_Data && appointment_Data.docId === docId){
-        await appointment_Data.findByIdAndUpdate(appointmentId,{cancelled:true});
+        await appointment_model.findByIdAndUpdate(appointmentId,{cancelled:true});
         return res.status(200).json({
             success:true,
             message:"appointement Canceled"
@@ -220,7 +220,84 @@ const appointmentCancel=async(req,res)=>{
             message:"appointment cancel failed"
         }) 
     }
+};
+const doctorDashboard=async(req,res)=>{
+    try{
+       const {docId}=req.doctor;
+       const appointments =await appointment_model.find({docId});
+       
+       let collected_money=0;
+       appointments.map((data)=>{
+        if(data.IsCompleted){
+            collected_money+=data.amount;
+        }
+       })
+
+       let patients=[]
+       appointments.map((newdata)=>{
+        if(!patients.includes(newdata.userId)){
+            patients.push(newdata.userId);
+        }
+       })
+      const dashData={
+        collected_money,
+        patients:patients.length,
+        appointment:appointments.length,
+        latest_appointment:appointments.reverse().slice(0,6)
+      }
+      res.status(200).json({
+        success:true,
+        dashData,
+        message:"doctor dashboard is completed"
+      })
+    }catch(error){
+        console.log(error);
+        res.status(400).json({
+            success:false,
+            message:"doctor dashboard has some issue"
+        }) 
+    }
+};
+const docProfile=async(req,res)=>{
+    try{
+     const{docId}=req.doctor;
+     const profile= await DoctorDetails.findById(docId);
+     res.status(200).json({
+        success:true,
+        profile,
+        message:"doctor profile is here"
+     }) 
+    }catch(error){
+       console.log(error);
+        res.status(400).json({
+            success:false,
+            message:"Some fault to find docData"
+        }) 
+    }
+};
+const updateDocProfile=async(req,res)=>{
+    try{
+        const{docId}=req.doctor;
+        const{fees,available,address}=req.body;
+
+        await DoctorDetails.findByIdAndUpdate(docId,{fees,available,address});
+        res.status(200).json({
+            success:true,
+            message:"doctor profie is updated"
+        })
+    }catch(error){
+       console.log(error);
+        res.status(400).json({
+            success:false,
+            message:"doctor profile is not updated"
+        })  
+    }
 }
 
-module.exports={allDoctordata,allDoctors,checkAvailability,doctorList,DoctorLogins,DoctorAppointment,appointmentComplete,appointmentCancel};
+module.exports={allDoctordata,allDoctors,checkAvailability,doctorList,DoctorLogins,DoctorAppointment,appointmentComplete,
+    appointmentCancel,
+    doctorDashboard,
+    docProfile,
+    updateDocProfile
+};
 
